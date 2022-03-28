@@ -31,8 +31,11 @@ import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
 import { Home, ExampleUI, Hints, Subgraph } from "./views";
 import { useStaticJsonRPC } from "./hooks";
+import RegisterProject from "./views/RegisterProject";
+import CreateLeaderboard from "./views/CreateLeaderboard";
+import Projects from "./views/Projects";
 
-const { ethers } = require("ethers");
+const { ethers, BigNumber } = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -167,7 +170,22 @@ function App(props) {
   ]);
 
   // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  // const purpose = useContractReader(readContracts, "YourContract", "purpose");
+
+  // const [totalProjects, setTotalProjects] = useState(0);
+  // const totalProjectCount = useContractReader(readContracts, "YourContract", "projectCount");
+  const projectName = useContractReader(readContracts, "YourContract", "getProjectName", [0]);
+  const projectCount = useContractReader(readContracts, "YourContract", "projectCount");
+
+  useEffect(() => {
+    console.log("PROJECT NAME RETURNED:");
+    console.log(projectName);
+  }, [projectName]);
+
+  useEffect(() => {
+    console.log("PROJECT COUNT RETURNED:");
+    projectCount && console.log(projectCount.toNumber());
+  }, [projectCount]);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -260,14 +278,24 @@ function App(props) {
         <Menu.Item key="/">
           <Link to="/">App Home</Link>
         </Menu.Item>
+        <Menu.Item key="/projects">
+          <Link to="/projects">Projects</Link>
+        </Menu.Item>
+        <Menu.Item key="/registerproject">
+          <Link to="/registerproject">Register Project</Link>
+        </Menu.Item>
+        <Menu.Item key="/createleaderboard">
+          <Link to="/createleaderboard">Create Leaderboard</Link>
+        </Menu.Item>
         <Menu.Item key="/debug">
           <Link to="/debug">Debug Contracts</Link>
         </Menu.Item>
-        <Menu.Item key="/hints">
-          <Link to="/hints">Hints</Link>
-        </Menu.Item>
         <Menu.Item key="/exampleui">
           <Link to="/exampleui">ExampleUI</Link>
+        </Menu.Item>
+        {/*
+        <Menu.Item key="/hints">
+          <Link to="/hints">Hints</Link>
         </Menu.Item>
         <Menu.Item key="/mainnetdai">
           <Link to="/mainnetdai">Mainnet DAI</Link>
@@ -275,12 +303,52 @@ function App(props) {
         <Menu.Item key="/subgraph">
           <Link to="/subgraph">Subgraph</Link>
         </Menu.Item>
+        */}
       </Menu>
 
       <Switch>
         <Route exact path="/">
           {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
           <Home yourLocalBalance={yourLocalBalance} readContracts={readContracts} />
+        </Route>
+        <Route path="/projects">
+          <Projects
+            address={address}
+            userSigner={userSigner}
+            mainnetProvider={mainnetProvider}
+            localProvider={localProvider}
+            yourLocalBalance={yourLocalBalance}
+            price={price}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+          />
+        </Route>
+        <Route path="/registerproject">
+          <RegisterProject
+            address={address}
+            userSigner={userSigner}
+            mainnetProvider={mainnetProvider}
+            localProvider={localProvider}
+            yourLocalBalance={yourLocalBalance}
+            price={price}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+          />
+        </Route>
+        <Route path="/createleaderboard">
+          <CreateLeaderboard
+            address={address}
+            userSigner={userSigner}
+            mainnetProvider={mainnetProvider}
+            localProvider={localProvider}
+            yourLocalBalance={yourLocalBalance}
+            price={price}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+          />
         </Route>
         <Route exact path="/debug">
           {/*
@@ -318,7 +386,6 @@ function App(props) {
             tx={tx}
             writeContracts={writeContracts}
             readContracts={readContracts}
-            purpose={purpose}
           />
         </Route>
         <Route path="/mainnetdai">
